@@ -1,0 +1,119 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.3 (swiftlang-1200.0.29.2 clang-1200.0.30.1)
+// swift-module-flags: -target arm64-apple-ios10.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name PaytmAnalytics
+import CommonCrypto
+import CoreData
+import Foundation
+@_exported import PaytmAnalytics
+import Swift
+import UIKit
+import os
+import zlib
+public struct CompressionLevel : Swift.RawRepresentable {
+  public let rawValue: Swift.Int32
+  public static let noCompression: PaytmAnalytics.CompressionLevel
+  public static let bestSpeed: PaytmAnalytics.CompressionLevel
+  public static let bestCompression: PaytmAnalytics.CompressionLevel
+  public static let defaultCompression: PaytmAnalytics.CompressionLevel
+  public init(rawValue: Swift.Int32)
+  public init(_ rawValue: Swift.Int32)
+  public typealias RawValue = Swift.Int32
+}
+public struct GzipError : Swift.Error {
+  public enum Kind : Swift.Equatable {
+    case stream
+    case data
+    case memory
+    case buffer
+    case version
+    case unknown(code: Swift.Int)
+    public static func == (a: PaytmAnalytics.GzipError.Kind, b: PaytmAnalytics.GzipError.Kind) -> Swift.Bool
+  }
+  public let kind: PaytmAnalytics.GzipError.Kind
+  public let message: Swift.String
+  public var localizedDescription: Swift.String {
+    get
+  }
+}
+extension Data {
+  public var isGzipped: Swift.Bool {
+    get
+  }
+  public func gzipped(level: PaytmAnalytics.CompressionLevel = .defaultCompression) throws -> Foundation.Data
+  public func gunzipped() throws -> Foundation.Data
+}
+public enum DispatchStrategy {
+  case manual
+  case intervalBased(interval: Foundation.TimeInterval)
+  case background
+}
+public enum PABuildType {
+  case debug
+  case adhoc
+  case release
+  public static func == (a: PaytmAnalytics.PABuildType, b: PaytmAnalytics.PABuildType) -> Swift.Bool
+  public var hashValue: Swift.Int {
+    get
+  }
+  public func hash(into hasher: inout Swift.Hasher)
+}
+public class PASignalResponse : Swift.CustomStringConvertible, Swift.CustomDebugStringConvertible {
+  final public let request: Foundation.URLRequest
+  final public let signalLogsSent: [PaytmAnalytics.PASignalLog]
+  final public let response: Foundation.HTTPURLResponse?
+  final public let responseData: Foundation.Data?
+  final public let responseTime: Foundation.TimeInterval
+  final public let error: Swift.Error?
+  required public init(request: Foundation.NSURLRequest, response: Foundation.HTTPURLResponse?, responseData: Foundation.Data?, responseTime: Foundation.TimeInterval = 0.0, signalLogsSent: [PaytmAnalytics.PASignalLog] = [], error: Swift.Error? = nil)
+  public var description: Swift.String {
+    get
+  }
+  public var debugDescription: Swift.String {
+    get
+  }
+  @objc deinit
+}
+public protocol PASignalDelegate : AnyObject {
+  func didSentSignalLogs(_ response: PaytmAnalytics.PASignalResponse)
+}
+extension PASignalDelegate {
+  public func didSentSignalLogs(_ response: PaytmAnalytics.PASignalResponse)
+}
+@objc final public class PASignalLog : ObjectiveC.NSObject, Foundation.NSCoding {
+  final public var deviceId: Swift.String
+  final public var eventType: Swift.String
+  final public var payload: [Swift.String : Any]
+  final public var deviceAdvertisementId: Swift.String?
+  final public var dataTime: Swift.String? {
+    get
+    set
+  }
+  final public var customerId: Swift.String?
+  final public var appVersion: Swift.String?
+  final public var appLanguage: Swift.String?
+  final public var deviceIp: Swift.String?
+  final public var deviceCarrier: Swift.String?
+  final public var deviceConnType: Swift.String?
+  final public var deviceGeoLatitude: Swift.String?
+  final public var deviceGeoLongitude: Swift.String?
+  required public init?(eventType: Swift.String, timestamp: Foundation.Date = Date(), payload: [Swift.String : Any], deviceID: Swift.String, customerID: Swift.String? = nil)
+  @objc final public func encode(with aCoder: Foundation.NSCoder)
+  @objc public init?(coder aDecoder: Foundation.NSCoder)
+  @objc override final public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_hasMissingDesignatedInitializers public class PASignalManager {
+  public static let shared: PaytmAnalytics.PASignalManager
+  weak public var delegate: PaytmAnalytics.PASignalDelegate?
+  public func initializeSignalSession(xRequester: Swift.String, secretKey: Swift.String, signalEndpointDomain: Swift.String, clientId: Swift.String? = nil, loggingEnabled: Swift.Bool = false, dispatchStrategy: PaytmAnalytics.DispatchStrategy = .intervalBased(interval: 10.0), maxBatchSizeToUpload: Swift.Int = 10, maxBatchSizeToCapture: Swift.Int = 2000, buildType: PaytmAnalytics.PABuildType = .release)
+  @available(*, deprecated, message: "This API is deprecated, please use pushEvent() instead")
+  public func push(withPASignalLog signalLog: PaytmAnalytics.PASignalLog)
+  public func pushEvent(_ signalLog: PaytmAnalytics.PASignalLog)
+  public func sendCriticalEvents(_ signalLogs: [PaytmAnalytics.PASignalLog], completion: ((Swift.Bool, [PaytmAnalytics.PASignalLog]?) -> Swift.Void)?)
+  @objc deinit
+}
+extension PaytmAnalytics.PABuildType : Swift.Equatable {}
+extension PaytmAnalytics.PABuildType : Swift.Hashable {}
