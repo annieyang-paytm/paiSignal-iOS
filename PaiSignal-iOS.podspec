@@ -4,7 +4,7 @@ Pod::Spec.new do |s|
     s.version      = "12.6.0"
     s.summary      = "Paytm iOS Analytics framework - Signal"
     s.description  = <<-DESC
-        Paytm iOS Analytics framework - Signal
+        - The same as PaytmSignal-iOS, but totally remove Hawkeye code
     DESC
     s.homepage     = "https://wiki.mypaytm.com/display/MAP/PaytmSignal-iOS+SDK+Integration"
     s.license      = { :type => 'MIT', :file => 'LICENSE' }
