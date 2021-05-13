@@ -4,10 +4,11 @@
 import CommonCrypto
 import CoreData
 import Foundation
+import PaiLogging
+import PaiNetwork
 @_exported import PaytmAnalytics
 import Swift
 import UIKit
-import os
 import zlib
 public struct CompressionLevel : Swift.RawRepresentable {
   public let rawValue: Swift.Int32
@@ -57,21 +58,17 @@ public enum PABuildType {
   }
   public func hash(into hasher: inout Swift.Hasher)
 }
-public class PASignalResponse : Swift.CustomStringConvertible, Swift.CustomDebugStringConvertible {
-  final public let request: Foundation.URLRequest
+public class PASignalResponse : PaiNetwork.PNKResponse<Foundation.Data> {
   final public let signalLogsSent: [PaytmAnalytics.PASignalLog]
-  final public let response: Foundation.HTTPURLResponse?
-  final public let responseData: Foundation.Data?
-  final public let responseTime: Foundation.TimeInterval
-  final public let error: Swift.Error?
-  required public init(request: Foundation.NSURLRequest, response: Foundation.HTTPURLResponse?, responseData: Foundation.Data?, responseTime: Foundation.TimeInterval = 0.0, signalLogsSent: [PaytmAnalytics.PASignalLog] = [], error: Swift.Error? = nil)
-  public var description: Swift.String {
+  public var responseData: Foundation.Data? {
     get
   }
-  public var debugDescription: Swift.String {
+  public init(request: Foundation.URLRequest, response: Foundation.HTTPURLResponse?, responseData: Foundation.Data?, responseTime: Foundation.TimeInterval = 0.0, signalLogsSent: [PaytmAnalytics.PASignalLog] = [], error: Swift.Error? = nil)
+  override public var description: Swift.String {
     get
   }
   @objc deinit
+  override public init(request: Foundation.URLRequest? = super, response: Foundation.HTTPURLResponse? = super, responseTime: Foundation.TimeInterval = super, result: Swift.Result<Foundation.Data, Swift.Error>)
 }
 public protocol PASignalDelegate : AnyObject {
   func didSentSignalLogs(_ response: PaytmAnalytics.PASignalResponse)
