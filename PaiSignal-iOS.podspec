@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
     s.name         = "PaiSignal-iOS"
     s.module_name  = "PaytmAnalytics"
-    s.version      = "0.1.3"
+    s.version      = "0.1.4"
     s.summary      = "Paytm iOS Analytics framework - Signal"
     s.description  = <<-DESC
     The iOS Analytics framework - Signal developed by Paytm
@@ -14,7 +14,4 @@ Pod::Spec.new do |s|
     s.platform = :ios
     s.swift_version = "5.0"
     s.ios.deployment_target = '10.0'
-
-    s.dependency 'pai-logging-ios'
-    s.dependency 'pai-network-ios'
 end

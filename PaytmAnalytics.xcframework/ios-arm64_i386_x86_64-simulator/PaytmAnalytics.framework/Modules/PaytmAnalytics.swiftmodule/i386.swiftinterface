@@ -1,14 +1,13 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.4 (swiftlang-1205.0.26.9 clang-1205.0.19.55)
+// swift-compiler-version: Apple Swift version 5.3 (swiftlang-1200.0.29.2 clang-1200.0.30.1)
 // swift-module-flags: -target i386-apple-ios10.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name PaytmAnalytics
 import CommonCrypto
 import CoreData
 import Foundation
-import PaiLogging
-import PaiNetwork
 @_exported import PaytmAnalytics
 import Swift
 import UIKit
+import os
 import zlib
 public struct CompressionLevel : Swift.RawRepresentable {
   public let rawValue: Swift.Int32
@@ -43,6 +42,15 @@ extension Data {
   public func gzipped(level: PaytmAnalytics.CompressionLevel = .defaultCompression) throws -> Foundation.Data
   public func gunzipped() throws -> Foundation.Data
 }
+public protocol PAAnalyticProtocol {
+  var userID: Swift.String? { get }
+}
+@objc @_inheritsConvenienceInitializers public class PAAnalyticManager : ObjectiveC.NSObject {
+  public static var shared: PaytmAnalytics.PAAnalyticManager
+  public var analyticDelegate: PaytmAnalytics.PAAnalyticProtocol?
+  @objc deinit
+  @objc override dynamic public init()
+}
 public enum DispatchStrategy {
   case manual
   case intervalBased(interval: Foundation.TimeInterval)
@@ -53,21 +61,25 @@ public enum PABuildType {
   case adhoc
   case release
   public static func == (a: PaytmAnalytics.PABuildType, b: PaytmAnalytics.PABuildType) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
+  public func hash(into hasher: inout Swift.Hasher)
 }
-public class PASignalResponse : PaiNetwork.PNKResponse<Foundation.Data> {
+public class PASignalResponse : Swift.CustomStringConvertible, Swift.CustomDebugStringConvertible {
+  final public let request: Foundation.URLRequest
   final public let signalLogsSent: [PaytmAnalytics.PASignalLog]
-  public var responseData: Foundation.Data? {
+  final public let response: Foundation.HTTPURLResponse?
+  final public let responseData: Foundation.Data?
+  final public let responseTime: Foundation.TimeInterval
+  final public let error: Swift.Error?
+  required public init(request: Foundation.NSURLRequest, response: Foundation.HTTPURLResponse?, responseData: Foundation.Data?, responseTime: Foundation.TimeInterval = 0.0, signalLogsSent: [PaytmAnalytics.PASignalLog] = [], error: Swift.Error? = nil)
+  public var description: Swift.String {
     get
   }
-  public init(request: Foundation.URLRequest, response: Foundation.HTTPURLResponse?, responseData: Foundation.Data?, responseTime: Foundation.TimeInterval = 0.0, signalLogsSent: [PaytmAnalytics.PASignalLog] = [], error: Swift.Error? = nil)
-  override public var description: Swift.String {
+  public var debugDescription: Swift.String {
     get
   }
-  override public init(request: Foundation.URLRequest? = super, response: Foundation.HTTPURLResponse? = super, responseTime: Foundation.TimeInterval = super, result: Swift.Result<Foundation.Data, Swift.Error>)
   @objc deinit
 }
 public protocol PASignalDelegate : AnyObject {
@@ -77,14 +89,11 @@ extension PASignalDelegate {
   public func didSentSignalLogs(_ response: PaytmAnalytics.PASignalResponse)
 }
 @objc final public class PASignalLog : ObjectiveC.NSObject, Foundation.NSCoding {
-  final public var deviceId: Swift.String
-  final public var eventType: Swift.String
-  final public var payload: [Swift.String : Any]
-  final public var deviceAdvertisementId: Swift.String?
   final public var dataTime: Swift.String? {
     get
     set
   }
+  final public var deviceAdvertisementId: Swift.String?
   final public var customerId: Swift.String?
   final public var appVersion: Swift.String?
   final public var appLanguage: Swift.String?
@@ -93,24 +102,53 @@ extension PASignalDelegate {
   final public var deviceConnType: Swift.String?
   final public var deviceGeoLatitude: Swift.String?
   final public var deviceGeoLongitude: Swift.String?
-  required public init?(eventType: Swift.String, timestamp: Foundation.Date = Date(), payload: [Swift.String : Any], deviceID: Swift.String, customerID: Swift.String? = nil)
+  public init?(eventType: Swift.String, timestamp: Foundation.Date = Date(), payload: [Swift.String : PaytmAnalytics.ValidJsonType], customerID: Swift.String? = nil)
+  @available(*, deprecated, message: "This initilizer is deprecated, please use init(eventType:timestamp:payload:customerID) instead; the type of parameter `payload` is changed to [String: ValidJsonType] from [String: Any]")
+  public init?(eventType: Swift.String, timestamp: Foundation.Date = Date(), payload: [Swift.String : Any], deviceID: Swift.String, customerID: Swift.String? = nil)
   @objc final public func encode(with aCoder: Foundation.NSCoder)
   @objc public init?(coder aDecoder: Foundation.NSCoder)
   @objc override final public var description: Swift.String {
     @objc get
   }
-  @objc override dynamic public init()
   @objc deinit
+  @objc override dynamic public init()
 }
 @_hasMissingDesignatedInitializers public class PASignalManager {
   public static let shared: PaytmAnalytics.PASignalManager
   weak public var delegate: PaytmAnalytics.PASignalDelegate?
+  public var debugEnabled: Swift.Bool {
+    get
+    set
+  }
+  public func initializeSignalSession(xRequester: Swift.String, secretKey: Swift.String, signalEndpointDomain: Swift.String, deviceId: Swift.String, clientId: Swift.String? = nil, options: PaytmAnalytics.PASignalSupplimentaryOptions = PASignalSupplimentaryOptions())
+  @available(*, deprecated, message: "Please use initializeSignalSession(xRequester:secretKey:signalEndpointDomain:deviceId:clientId:options:) instead; `deviceId` and `options` are newly added parameters")
   public func initializeSignalSession(xRequester: Swift.String, secretKey: Swift.String, signalEndpointDomain: Swift.String, clientId: Swift.String? = nil, loggingEnabled: Swift.Bool = false, dispatchStrategy: PaytmAnalytics.DispatchStrategy = .intervalBased(interval: 10.0), maxBatchSizeToUpload: Swift.Int = 10, maxBatchSizeToCapture: Swift.Int = 2000, buildType: PaytmAnalytics.PABuildType = .release)
-  @available(*, deprecated, message: "This API is deprecated, please use pushEvent() instead")
   public func push(withPASignalLog signalLog: PaytmAnalytics.PASignalLog)
-  public func pushEvent(_ signalLog: PaytmAnalytics.PASignalLog)
   public func sendCriticalEvents(_ signalLogs: [PaytmAnalytics.PASignalLog], completion: ((Swift.Bool, [PaytmAnalytics.PASignalLog]?) -> Swift.Void)?)
   @objc deinit
+}
+public struct PASignalSupplimentaryOptions {
+  public init(dispatchStrategy: PaytmAnalytics.DispatchStrategy = .intervalBased(interval: 10.0), maxBatchSizeToUpload: Swift.Int = 10, maxBatchSizeToCapture: Swift.Int = 2000, buildType: PaytmAnalytics.PABuildType = .release)
+}
+@frozen public enum ValidJsonType {
+  case PRIMITIVE(PaytmAnalytics.PrimitiveDataType)
+  case ARRAY([PaytmAnalytics.PrimitiveDataType])
+  case DICTIONARY([Swift.String : PaytmAnalytics.PrimitiveDataType])
+}
+@frozen public enum PrimitiveDataType {
+  case INT(Swift.Int)
+  case INT8(Swift.Int8)
+  case INT16(Swift.Int16)
+  case INT32(Swift.Int32)
+  case INT64(Swift.Int64)
+  case UINT8(Swift.UInt8)
+  case UINT16(Swift.UInt16)
+  case UINT32(Swift.UInt32)
+  case UINT64(Swift.UInt64)
+  case STRING(Swift.String)
+  case BOOLEAN(Swift.Bool)
+  case FLOAT(Swift.Float)
+  case DOUBLE(Swift.Double)
 }
 extension PaytmAnalytics.PABuildType : Swift.Equatable {}
 extension PaytmAnalytics.PABuildType : Swift.Hashable {}
