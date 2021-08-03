@@ -102,8 +102,8 @@ extension PASignalDelegate {
   final public var deviceConnType: Swift.String?
   final public var deviceGeoLatitude: Swift.String?
   final public var deviceGeoLongitude: Swift.String?
-  public init?(eventType: Swift.String, timestamp: Foundation.Date = Date(), payload: [Swift.String : PaytmAnalytics.ValidJsonType], customerID: Swift.String? = nil)
-  @available(*, deprecated, message: "This initilizer is deprecated, please use init(eventType:timestamp:payload:customerID) instead; the type of parameter `payload` is changed to [String: ValidJsonType] from [String: Any]")
+  public init?(eventType: Swift.String, timestamp: Foundation.Date = Date(), payload: [Swift.String : Any], customerID: Swift.String? = nil)
+  @available(*, deprecated, message: "This initilizer is deprecated, please use init(eventType:timestamp:payload:customerID) instead, where deviceID is no longer required")
   public init?(eventType: Swift.String, timestamp: Foundation.Date = Date(), payload: [Swift.String : Any], deviceID: Swift.String, customerID: Swift.String? = nil)
   @objc final public func encode(with aCoder: Foundation.NSCoder)
   @objc public init?(coder aDecoder: Foundation.NSCoder)
@@ -129,26 +129,6 @@ extension PASignalDelegate {
 }
 public struct PASignalSupplimentaryOptions {
   public init(dispatchStrategy: PaytmAnalytics.DispatchStrategy = .intervalBased(interval: 10.0), maxBatchSizeToUpload: Swift.Int = 10, maxBatchSizeToCapture: Swift.Int = 2000, buildType: PaytmAnalytics.PABuildType = .release)
-}
-@frozen public enum ValidJsonType {
-  case PRIMITIVE(PaytmAnalytics.PrimitiveDataType)
-  case ARRAY([PaytmAnalytics.PrimitiveDataType])
-  case DICTIONARY([Swift.String : PaytmAnalytics.PrimitiveDataType])
-}
-@frozen public enum PrimitiveDataType {
-  case INT(Swift.Int)
-  case INT8(Swift.Int8)
-  case INT16(Swift.Int16)
-  case INT32(Swift.Int32)
-  case INT64(Swift.Int64)
-  case UINT8(Swift.UInt8)
-  case UINT16(Swift.UInt16)
-  case UINT32(Swift.UInt32)
-  case UINT64(Swift.UInt64)
-  case STRING(Swift.String)
-  case BOOLEAN(Swift.Bool)
-  case FLOAT(Swift.Float)
-  case DOUBLE(Swift.Double)
 }
 extension PaytmAnalytics.PABuildType : Swift.Equatable {}
 extension PaytmAnalytics.PABuildType : Swift.Hashable {}
