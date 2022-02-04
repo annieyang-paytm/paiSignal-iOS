@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
     s.name         = "PaiSignal-iOS"
     s.module_name  = "PaytmAnalytics"
-    s.version      = "12.10.1"
+    s.version      = "12.10.2"
     s.summary      = "Paytm iOS Analytics framework - Signal"
     s.description  = <<-DESC
     The iOS Analytics framework - Signal developed by Paytm
