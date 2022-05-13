@@ -84,9 +84,11 @@ public class PASignalResponse : Swift.CustomStringConvertible, Swift.CustomDebug
 }
 public protocol PASignalDelegate : AnyObject {
   func didSentSignalLogs(_ response: PaytmAnalytics.PASignalResponse)
+  func currentTime() -> Foundation.Date?
 }
 extension PASignalDelegate {
   public func didSentSignalLogs(_ response: PaytmAnalytics.PASignalResponse)
+  public func currentTime() -> Foundation.Date?
 }
 @objc final public class PASignalLog : ObjectiveC.NSObject, Foundation.NSCoding {
   final public var dataTime: Swift.String? {
