@@ -1,5 +1,5 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.3.1 (swiftlang-1200.0.41 clang-1200.0.32.8)
+// swift-compiler-version: Apple Swift version 5.6 (swiftlang-5.6.0.323.62 clang-1316.0.20.8)
 // swift-module-flags: -target armv7-apple-ios10.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name PaytmAnalytics
 import CommonCrypto
 import CoreData
@@ -7,6 +7,7 @@ import Foundation
 @_exported import PaytmAnalytics
 import Swift
 import UIKit
+import _Concurrency
 import os
 import zlib
 public struct CompressionLevel : Swift.RawRepresentable {
@@ -35,7 +36,7 @@ public struct GzipError : Swift.Error {
     get
   }
 }
-extension Data {
+extension Foundation.Data {
   public var isGzipped: Swift.Bool {
     get
   }
@@ -48,8 +49,8 @@ public protocol PAAnalyticProtocol {
 @objc @_inheritsConvenienceInitializers public class PAAnalyticManager : ObjectiveC.NSObject {
   public static var shared: PaytmAnalytics.PAAnalyticManager
   public var analyticDelegate: PaytmAnalytics.PAAnalyticProtocol?
-  @objc deinit
   @objc override dynamic public init()
+  @objc deinit
 }
 public enum DispatchStrategy {
   case manual
@@ -61,10 +62,10 @@ public enum PABuildType {
   case adhoc
   case release
   public static func == (a: PaytmAnalytics.PABuildType, b: PaytmAnalytics.PABuildType) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
-  public func hash(into hasher: inout Swift.Hasher)
 }
 public class PASignalResponse : Swift.CustomStringConvertible, Swift.CustomDebugStringConvertible {
   final public let request: Foundation.URLRequest
@@ -86,7 +87,7 @@ public protocol PASignalDelegate : AnyObject {
   func didSentSignalLogs(_ response: PaytmAnalytics.PASignalResponse)
   func currentTime() -> Foundation.Date?
 }
-extension PASignalDelegate {
+extension PaytmAnalytics.PASignalDelegate {
   public func didSentSignalLogs(_ response: PaytmAnalytics.PASignalResponse)
   public func currentTime() -> Foundation.Date?
 }
@@ -114,7 +115,6 @@ extension PASignalDelegate {
     @objc get
   }
   @objc deinit
-  @objc override dynamic public init()
 }
 @_hasMissingDesignatedInitializers public class PASignalManager {
   public static let shared: PaytmAnalytics.PASignalManager
