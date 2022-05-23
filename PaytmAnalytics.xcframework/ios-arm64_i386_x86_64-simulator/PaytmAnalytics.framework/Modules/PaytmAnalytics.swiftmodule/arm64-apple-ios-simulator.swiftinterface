@@ -56,6 +56,7 @@ public enum DispatchStrategy {
   case manual
   case intervalBased(interval: Foundation.TimeInterval)
   case background
+  case awaitFlagOffForIntervalBased(interval: Foundation.TimeInterval)
 }
 public enum PABuildType {
   case debug
@@ -128,6 +129,7 @@ extension PaytmAnalytics.PASignalDelegate {
   public func initializeSignalSession(xRequester: Swift.String, secretKey: Swift.String, signalEndpointDomain: Swift.String, clientId: Swift.String? = nil, loggingEnabled: Swift.Bool = false, dispatchStrategy: PaytmAnalytics.DispatchStrategy = .intervalBased(interval: 10.0), maxBatchSizeToUpload: Swift.Int = 10, maxBatchSizeToCapture: Swift.Int = 2000, buildType: PaytmAnalytics.PABuildType = .release)
   public func push(withPASignalLog signalLog: PaytmAnalytics.PASignalLog)
   public func sendCriticalEvents(_ signalLogs: [PaytmAnalytics.PASignalLog], completion: ((Swift.Bool, [PaytmAnalytics.PASignalLog]?) -> Swift.Void)?)
+  public func flagOffSignalEvents()
   @objc deinit
 }
 public struct PASignalSupplimentaryOptions {
