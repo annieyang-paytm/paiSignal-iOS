@@ -133,7 +133,7 @@ extension PaytmAnalytics.PASignalDelegate {
   @objc deinit
 }
 public struct PASignalSupplimentaryOptions {
-  public init(dispatchStrategy: PaytmAnalytics.DispatchStrategy = .intervalBased(interval: 10.0), maxBatchSizeToUpload: Swift.Int = 10, maxBatchSizeToCapture: Swift.Int = 2000, buildType: PaytmAnalytics.PABuildType = .release)
+  public init(dispatchStrategy: PaytmAnalytics.DispatchStrategy = .intervalBased(interval: 10.0), maxBatchSizeToUpload: Swift.Int = 10, maxBatchSizeToCapture: Swift.Int = 2000, buildType: PaytmAnalytics.PABuildType = .release, batchSizeLimit: Swift.Int = 10)
 }
 extension PaytmAnalytics.PABuildType : Swift.Equatable {}
 extension PaytmAnalytics.PABuildType : Swift.Hashable {}
